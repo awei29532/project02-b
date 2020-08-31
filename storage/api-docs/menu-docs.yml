@@ -1,0 +1,192 @@
+openapi: 3.0.0
+info:
+  title: gm98backend-Api
+  description: GM9988後台 API
+  version: 1.0.0
+servers:
+- url: /
+  description: default root url
+- url: http://gm98ba.ateam99.net/
+  description: Development server non-https
+- url: https://gm98ba.ateam99.net/
+  description: Development server https
+paths:
+  /api/login:
+    post:
+      tags:
+        - login method
+      summary: user login
+      description: user login
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                username:
+                  description: username
+                  type: string
+                password:
+                  description: password
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    properties:
+                      user:
+                        description: user data
+                        properties:
+                          identity:
+                            description: identity
+                            type: string
+                          username:
+                            description: username
+                            type: string
+                          nickname:
+                            description: nickname
+                            type: string
+                          image:
+                            description: image
+                            type: string
+                        type: object
+                    type: object
+                  token:
+                    description: token
+                    type: string
+                type: object
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+      security:
+        - Bearer: []
+  /api/menu:
+    get:
+      tags:
+        - get method
+      summary: get menu list
+      description: get menu list
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/getResponse'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+      security:
+        - Bearer: []
+components:
+  schemas:
+    badRequest:
+      properties:
+        error:
+          description: 錯誤訊息
+          type: string
+      type: object
+    unprocessableEntity:
+      oneOf:
+        - properties:
+            error:
+              description: validate error
+              type: object
+              allOf:
+                - properties:
+                    column_name:
+                      type: array
+                      items:
+                        type: string
+                  type: object
+          type: object
+        - properties:
+            error:
+              description: validate error
+              type: string
+          type: object
+    serverError:
+      properties:
+        error:
+          description: 錯誤訊息
+          type: string
+      type: object
+    getResponse:
+      properties:
+        data:
+          type: array
+          items:
+            properties:
+              mainList:
+                description: mainList
+                type: string
+              '':
+                oneOf:
+                  - property: null
+                    $ref: '#/components/schemas/subList'
+                  - property: null
+                    $ref: '#/components/schemas/tabList'
+                  - property: null
+                    allOf:
+                      - property: null
+                        $ref: '#/components/schemas/subList'
+                      - property: null
+                        $ref: '#/components/schemas/tabList'
+            type: object
+      type: object
+    subList:
+      properties:
+        subList:
+          properties:
+            permission name:
+              description: permission name
+              type: string
+          type: object
+      type: object
+    tabList:
+      properties:
+        tabList:
+          type: object
+          oneOf:
+            - property: permission name
+              description: permission name
+              type: string
+            - property: permission name
+              description: permission name
+              properties:
+                permission name:
+                  description: permission name
+                  type: string
+              type: object
+      type: object
+  securitySchemes:
+    Bearer:
+      type: http
+      description: Authorization
+      name: Authorization
+      in: header
+      bearerFormat: JWT
+      scheme: bearer

@@ -1,0 +1,571 @@
+openapi: 3.0.1
+info:
+  title: gm98backend-Api
+  version: 1.0.0
+tags:
+  - name: login method
+    description: login method
+
+  - name: Member
+    description: 會員相關API
+paths:
+  /api/login:
+    post:
+      tags:
+        - login method
+      summary: user login
+      description: user login
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                username:
+                  description: username
+                  type: string
+                password:
+                  description: password
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    properties:
+                      user:
+                        description: user data
+                        properties:
+                          identity:
+                            description: identity
+                            type: string
+                          username:
+                            description: username
+                            type: string
+                          nickname:
+                            description: nickname
+                            type: string
+                          image:
+                            description: image
+                            type: string
+                        type: object
+                    type: object
+                  token:
+                    description: token
+                    type: string
+                type: object
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+      security:
+        - Bearer: []
+
+  /api/member:
+    get:
+      tags: 
+        - Member
+      summary: 會員列表
+      security:
+        - Bearer: []
+      parameters:
+        - name: agent_id
+          in: path
+          description: 上層代理ID
+          schema:
+            type: integer
+        - name: username
+          in: path
+          description: 會員帳號
+          schema:
+            type: string
+        - name: invitation_code
+          in: path
+          description: 邀請碼
+          schema:
+            type: string
+        - name: status
+          in: path
+          description: 狀態
+          schema:
+            type: integer
+        - name: per_page
+          in: path
+          description: 每頁筆數
+          schema:
+            type: integer
+        - name: page
+          in: path
+          description: 頁碼
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content: 
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      content:
+                        type: array
+                        description: data
+                        items:
+                          properties:
+                            id:
+                              type: integer
+                              description: 會員ID
+                            username:
+                              type: string
+                              description: 帳號
+                            level:
+                              type: integer
+                              description: 等級
+                            agent:
+                              type: string
+                              description: 上層代理
+                            bind_code:
+                              type: string
+                              description: 綁定推廣代碼
+                            invitation_code:
+                              type: string
+                              description: 推廣代碼
+                            status:
+                              type: integer
+                              description: 狀態
+                            balance:
+                                type: string
+                                description: 資產
+                            freeze_balance:
+                                type: string
+                                description: 凍結金額
+                            login_ip:
+                                type: string
+                                description: 最後登入IP
+                            register_ip:
+                                type: string
+                                description: 註冊IP
+                            register_at:
+                                type: string
+                                description: 註冊時間
+                      total:
+                        type: integer
+                        description: 資料總筆數
+                      page:
+                        type: integer
+                        description: 頁碼
+                      per_page:
+                        type: integer
+                        description: 每頁筆數
+                      last_page:
+                        type: integer
+                        description: 最後一頁
+
+    put:
+      tags:
+        - Member
+      summary: 新增會員
+      security:
+        - Bearer: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                agent_id:
+                  description: 上層代理ID
+                  required: true
+                  type: integer
+                level_id:
+                  description: 等級ID 
+                  required: true
+                  type: integer
+                username:
+                  description: 帳號
+                  required: true
+                  type: string
+                cell_phone:
+                  description: 手機
+                  required: true
+                  type: string
+      responses:
+        200:
+          description: OK
+  
+  /api/member/{id}:
+    get:
+      tags:
+        - Member
+      summary: 會員詳細資料
+      security: 
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          description: 會員ID
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: 
+                    type: integer
+                    description: 會員ID
+                  username: 
+                    type: string
+                    description: 帳號
+                  birthday: 
+                    type: string
+                    description: 生日
+                  status: 
+                    type: integer
+                    description: 狀態
+                  agent: 
+                    type: string
+                    description: 上層代理
+                  member_bank: 
+                    type: string
+                    description: 銀行卡
+                  bind_code: 
+                    type: string
+                    description: 綁定推廣碼
+                  nvitation_code: 
+                    type: string
+                    description: 推廣碼
+                  register_at: 
+                    type: string
+                    description: 註冊時間
+                  login_data: 
+                    type: string
+                    description: 登入資訊
+                  level: 
+                    type: integer
+                    description: 會員等級
+                  cell_phone: 
+                    type: string
+                    description: 電話
+                  line: 
+                    type: string
+                    description: LINE
+                  address: 
+                    type: string
+                    description: 地址
+                  balance:
+                    type: object
+                    properties:
+                      total_balance:
+                        description: 總資產
+                        type: string
+                      main_wallet:
+                        description: 主錢包
+                        type: string
+                      sub_wallet:
+                        description: 子錢包
+                        type: string
+                      freeze_amount:
+                        description: 凍結金額
+                        type: string
+                      game_wallets:
+                        description: 遊戲錢包
+                        type: array
+                        items:
+                          properties:
+                            name:
+                              type: string
+                              description: 廠商名稱
+                            amount:
+                              type: string
+                              description: 額度
+
+    post:
+      tags:
+        - Member
+      summary: 更新會員資料
+      security:
+        - Bearer: []
+      requestBody: 
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: 會員ID
+                  type: integer
+                level_id:
+                  description: 等級ID
+                  type: integer
+                cell_phone:
+                  description: 手機
+                  type: string
+                line:
+                  description: LINE
+                  type: string
+                address:
+                  description: 地址
+                  type: string
+      responses:
+        200:
+          description: OK
+
+  /api/member/toggle-enabled:
+    post:
+      tags:
+        - Member
+      summary: 啟停用、凍結會員
+      security:
+        - Bearer: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: 會員ID
+                  required: true
+                  type: integer
+                status:
+                  description: 狀態，0=凍結，1=啟用，2=停用
+                  required: true
+                  type: integer
+      responses:
+        200:
+          description: OK
+
+  /api/member/change-password:
+    post:
+      tags:
+        - Member
+      summary: 產生新密碼
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: 會員ID
+                  type: integer
+                  required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    description: data
+                    type: object
+                    properties:
+                      password:
+                        description: 新密碼
+                        type: string
+
+  /api/member/ip-list/get:
+    get:
+      tags:
+        - Member
+      summary: 會員重複IP列表
+      security:
+        - Bearer: []
+      parameters:
+        - name: agent_id
+          in: path
+          description: 上層代理ID
+          schema:
+            type: integer
+        - name: username
+          in: path
+          description: 會員帳號
+          schema:
+            type: string
+        - name: invitation_code
+          in: path
+          description: 邀請碼
+          schema:
+            type: string
+        - name: status
+          in: path
+          description: 狀態
+          schema:
+            type: integer
+        - name: per_page
+          in: path
+          description: 每頁筆數
+          schema:
+            type: integer
+        - name: page
+          in: path
+          description: 頁碼
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      content:
+                        type: array
+                        description: data
+                        items:
+                          properties:
+                            id:
+                              type: integer
+                              description: 會員ID
+                            login_ip_exists:
+                                type: integer
+                                description: 登入IP重複
+                            register_ip_exists:
+                              type: integer
+                              description: 註冊IP重複
+                      total:
+                        type: integer
+                        description: 資料總筆數
+                      page:
+                        type: integer
+                        description: 頁碼
+                      per_page:
+                        type: integer
+                        description: 每頁筆數
+                      last_page:
+                        type: integer
+                        description: 最後一頁
+
+  /api/member/search-agent/get:
+    get:
+      tags:
+        - Member
+      summary: 搜尋代理
+      security:
+        - Bearer: []
+      parameters:
+        - name:
+          in: path
+          description: 代理帳號、暱稱
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          description: 代理ID
+                          type: integer
+                        username:
+                          description: 帳號
+                          type: string
+                        nickname:
+                          description: 暱稱
+                          type: string
+
+  /api/member/member-level/get:
+    get:
+      tags:
+        - Member
+      summary: 會員等級列表
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          description: 等級ID
+                          type: integer
+                        name:
+                          description: 等級名稱
+                          type: string
+
+  /api/member/deposit-record/get:
+    get:
+      tags:
+        - Member
+      summary: 存款紀錄
+      security:
+        - Bearer: []
+      properties:
+        - name: page
+          in: path
+          description: 頁碼
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      content:
+                        type: array
+                        description: data
+                        items:
+                          properties:
+                            id:
+                              description: ID
+                              type: integer
+                            amount:
+                              description: 金額
+                              type: string
+                            type:
+                              description: 交易類型
+                              type: string
+                            status:
+                              description: 狀態
+                              type: integer
+                            created_at:
+                              description: 申請時間
+                              type: string
+                            updated_at:
+                              description: 更新時間
+                              type: string
+
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      name: Authorization
+      in: header
+      bearerFormat: "JWT"
+      scheme: "bearer"

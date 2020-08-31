@@ -1,0 +1,137 @@
+openapi: 3.0.1
+info:
+  title: gm98backend-Api
+  version: 1.0.0
+servers:
+- url: /
+  description: default root url
+- url: http://gm98ba.ateam99.net/
+  description: Development server non-https
+- url: https://gm98ba.ateam99.net/
+  description: Development server https
+tags:
+- name: login method
+  description: login method
+- name: api
+  description: Everything about your api info
+paths:
+  /api/login:
+    post:
+      tags:
+        - login method
+      summary: user login
+      description: user login
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                username:
+                  description: username
+                  type: string
+                password:
+                  description: password
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    properties:
+                      user:
+                        description: user data
+                        properties:
+                          identity:
+                            description: identity
+                            type: string
+                          username:
+                            description: username
+                            type: string
+                          nickname:
+                            description: nickname
+                            type: string
+                          image:
+                            description: image
+                            type: string
+                        type: object
+                    type: object
+                  token:
+                    description: token
+                    type: string
+                type: object
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+      security:
+        - Bearer: []
+  /path/to/your/api/route:
+    get:
+      tags:
+      - api
+      summary: Update an existing pet
+      security:
+        - Bearer: []
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Pet not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+components:
+  schemas:
+    badRequest:
+      properties:
+        error:
+          description: 錯誤訊息
+          type: string
+      type: object
+    unprocessableEntity:
+      oneOf:
+        - properties:
+            error:
+              description: validate error
+              type: object
+              allOf:
+                - properties:
+                    column_name:
+                      type: array
+                      items:
+                        type: string
+                  type: object
+          type: object
+        - properties:
+            error:
+              description: validate error
+              type: string
+          type: object
+    serverError:
+      properties:
+        error:
+          description: 錯誤訊息
+          type: string
+      type: object
+  securitySchemes:
+    Bearer:
+      type: http
+      description: Authorization
+      name: Authorization
+      in: header
+      bearerFormat: JWT
+      scheme: bearer
